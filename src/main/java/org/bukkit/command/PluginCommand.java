@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-public final class PluginCommand extends Command {
+public class PluginCommand extends Command {
     private final Plugin owningPlugin;
 
     public PluginCommand(String name, Plugin owner) {
@@ -15,10 +15,16 @@ public final class PluginCommand extends Command {
 
     public boolean execute(Player player, String commandLabel, String[] args) {
         boolean cmdSuccess = owningPlugin.onCommand(player, this, commandLabel, args);
-        if (!cmdSuccess && !usageMessage.isEmpty()) {
-            String tmpMsg = usageMessage.replace("<command>", commandLabel);
+        if (!cmdSuccess)
+            displayUsage(player, commandLabel);
+        return cmdSuccess;
+    }
+    
+    public void displayUsage(Player player, String label) {
+        if (!usageMessage.isEmpty()) {
+            String tmpMsg = usageMessage.replace("<command>", label);
             String[] usageLines = tmpMsg.split("\\n");
-            for(String line: usageLines) {
+            for (String line: usageLines) {
                 while (line.length() > 0) {
                     int stripChars = (line.length() > 53 ? 53:line.length());
                     player.sendMessage(ChatColor.RED + line.substring(0, stripChars));
@@ -26,6 +32,5 @@ public final class PluginCommand extends Command {
                 }
             }
         }
-        return cmdSuccess;
     }
 }
